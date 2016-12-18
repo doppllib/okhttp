@@ -131,7 +131,6 @@ public final class MockWebServer implements TestRule {
   private long bodyLimit = Long.MAX_VALUE;
   private ServerSocketFactory serverSocketFactory = ServerSocketFactory.getDefault();
   private ServerSocket serverSocket;
-  private SSLSocketFactory sslSocketFactory;
   private ExecutorService executor;
   private boolean tunnelProxy;
   private Dispatcher dispatcher = new QueueDispatcher();
@@ -201,7 +200,7 @@ public final class MockWebServer implements TestRule {
    */
   public HttpUrl url(String path) {
     return new HttpUrl.Builder()
-        .scheme(sslSocketFactory != null ? "https" : "http")
+        .scheme("http")
         .host(getHostName())
         .port(getPort())
         .build()
@@ -239,16 +238,6 @@ public final class MockWebServer implements TestRule {
       throw new IllegalArgumentException("protocols must not contain null");
     }
     this.protocols = protocols;
-  }
-
-  /**
-   * Serve requests with HTTPS rather than otherwise.
-   *
-   * @param tunnelProxy true to expect the HTTP CONNECT method before negotiating TLS.
-   */
-  public void useHttps(SSLSocketFactory sslSocketFactory, boolean tunnelProxy) {
-    this.sslSocketFactory = sslSocketFactory;
-    this.tunnelProxy = tunnelProxy;
   }
 
   /**
@@ -418,37 +407,7 @@ public final class MockWebServer implements TestRule {
 
       public void processConnection() throws Exception {
         Protocol protocol = Protocol.HTTP_1_1;
-        Socket socket;
-        if (sslSocketFactory != null) {
-          if (tunnelProxy) {
-            createTunnel();
-          }
-          SocketPolicy socketPolicy = dispatcher.peek().getSocketPolicy();
-          if (socketPolicy == FAIL_HANDSHAKE) {
-            dispatchBookkeepingRequest(sequenceNumber, raw);
-            processHandshakeFailure(raw);
-            return;
-          }
-          socket = sslSocketFactory.createSocket(raw, raw.getInetAddress().getHostAddress(),
-              raw.getPort(), true);
-          SSLSocket sslSocket = (SSLSocket) socket;
-          sslSocket.setUseClientMode(false);
-          openClientSockets.add(socket);
-
-          if (protocolNegotiationEnabled) {
-            Platform.get().configureTlsExtensions(sslSocket, null, protocols);
-          }
-
-          sslSocket.startHandshake();
-
-          if (protocolNegotiationEnabled) {
-            String protocolString = Platform.get().getSelectedProtocol(sslSocket);
-            protocol = protocolString != null ? Protocol.get(protocolString) : Protocol.HTTP_1_1;
-          }
-          openClientSockets.remove(raw);
-        } else {
-          socket = raw;
-        }
+        Socket socket = raw;
 
         if (protocol != Protocol.HTTP_1_1) {
           FramedSocketHandler framedSocketListener = new FramedSocketHandler(socket, protocol);

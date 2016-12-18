@@ -405,7 +405,8 @@ public final class Util {
    */
   public static String domainToAscii(String input) {
     try {
-      String result = IDN.toASCII(input).toLowerCase(Locale.US);
+//      String ascii = IDN.toASCII(input);
+      String result = input.toLowerCase(Locale.US);
       if (result.isEmpty()) return null;
 
       // Confirm that the IDN ToASCII result doesn't contain any illegal characters.

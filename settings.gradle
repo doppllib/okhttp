@@ -1,0 +1,5 @@
+rootProject.name = 'okhttp'
+
+include 'okhttp'
+include 'okhttp-ws'
+include 'mockwebserver'

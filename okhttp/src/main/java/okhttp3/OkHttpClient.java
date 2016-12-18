@@ -221,14 +221,15 @@ public class OkHttpClient implements Cloneable, Call.Factory {
       isTLS = isTLS || spec.isTls();
     }
 
-    if (builder.sslSocketFactory != null || !isTLS) {
+//    if (builder.sslSocketFactory != null || !isTLS) {
       this.sslSocketFactory = builder.sslSocketFactory;
       this.certificateChainCleaner = builder.certificateChainCleaner;
-    } else {
+//    }
+  /* else {
       X509TrustManager trustManager = systemDefaultTrustManager();
       this.sslSocketFactory = systemDefaultSslSocketFactory(trustManager);
       this.certificateChainCleaner = CertificateChainCleaner.get(trustManager);
-    }
+    }*/
 
     this.hostnameVerifier = builder.hostnameVerifier;
     this.certificatePinner = builder.certificatePinner.withCertificateChainCleaner(

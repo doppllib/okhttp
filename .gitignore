@@ -22,3 +22,8 @@ classes
 obj
 
 .DS_Store
+
+*.m
+*.h
+
+Okhttp3Ios
