@@ -185,9 +185,7 @@ public class OkHttpClient implements Cloneable, Call.Factory {
   final InternalCache internalCache;
   final SocketFactory socketFactory;
   final SSLSocketFactory sslSocketFactory;
-  final CertificateChainCleaner certificateChainCleaner;
   final HostnameVerifier hostnameVerifier;
-  final CertificatePinner certificatePinner;
   final Authenticator proxyAuthenticator;
   final Authenticator authenticator;
   final ConnectionPool connectionPool;
@@ -221,19 +219,15 @@ public class OkHttpClient implements Cloneable, Call.Factory {
       isTLS = isTLS || spec.isTls();
     }
 
-//    if (builder.sslSocketFactory != null || !isTLS) {
+    if (builder.sslSocketFactory != null || !isTLS) {
       this.sslSocketFactory = builder.sslSocketFactory;
-      this.certificateChainCleaner = builder.certificateChainCleaner;
-//    }
-  /* else {
-      X509TrustManager trustManager = systemDefaultTrustManager();
-      this.sslSocketFactory = systemDefaultSslSocketFactory(trustManager);
-      this.certificateChainCleaner = CertificateChainCleaner.get(trustManager);
-    }*/
+    }
+   else {
+      this.sslSocketFactory = (SSLSocketFactory) SSLSocketFactory
+              .getDefault();
+    }
 
     this.hostnameVerifier = builder.hostnameVerifier;
-    this.certificatePinner = builder.certificatePinner.withCertificateChainCleaner(
-        certificateChainCleaner);
     this.proxyAuthenticator = builder.proxyAuthenticator;
     this.authenticator = builder.authenticator;
     this.connectionPool = builder.connectionPool;
@@ -244,32 +238,6 @@ public class OkHttpClient implements Cloneable, Call.Factory {
     this.connectTimeout = builder.connectTimeout;
     this.readTimeout = builder.readTimeout;
     this.writeTimeout = builder.writeTimeout;
-  }
-
-  private X509TrustManager systemDefaultTrustManager() {
-    try {
-      TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
-          TrustManagerFactory.getDefaultAlgorithm());
-      trustManagerFactory.init((KeyStore) null);
-      TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-      if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
-        throw new IllegalStateException("Unexpected default trust managers:"
-            + Arrays.toString(trustManagers));
-      }
-      return (X509TrustManager) trustManagers[0];
-    } catch (GeneralSecurityException e) {
-      throw new AssertionError(); // The system has no TLS. Just give up.
-    }
-  }
-
-  private SSLSocketFactory systemDefaultSslSocketFactory(X509TrustManager trustManager) {
-    try {
-      SSLContext sslContext = SSLContext.getInstance("TLS");
-      sslContext.init(null, new TrustManager[] { trustManager }, null);
-      return sslContext.getSocketFactory();
-    } catch (GeneralSecurityException e) {
-      throw new AssertionError(); // The system has no TLS. Just give up.
-    }
   }
 
   /** Default connect timeout (in milliseconds). */
@@ -321,10 +289,6 @@ public class OkHttpClient implements Cloneable, Call.Factory {
 
   public HostnameVerifier hostnameVerifier() {
     return hostnameVerifier;
-  }
-
-  public CertificatePinner certificatePinner() {
-    return certificatePinner;
   }
 
   public Authenticator authenticator() {
@@ -405,9 +369,7 @@ public class OkHttpClient implements Cloneable, Call.Factory {
     InternalCache internalCache;
     SocketFactory socketFactory;
     SSLSocketFactory sslSocketFactory;
-    CertificateChainCleaner certificateChainCleaner;
     HostnameVerifier hostnameVerifier;
-    CertificatePinner certificatePinner;
     Authenticator proxyAuthenticator;
     Authenticator authenticator;
     ConnectionPool connectionPool;
@@ -427,7 +389,6 @@ public class OkHttpClient implements Cloneable, Call.Factory {
       cookieJar = CookieJar.NO_COOKIES;
       socketFactory = SocketFactory.getDefault();
       hostnameVerifier = OkHostnameVerifier.INSTANCE;
-      certificatePinner = CertificatePinner.DEFAULT;
       proxyAuthenticator = Authenticator.NONE;
       authenticator = Authenticator.NONE;
       connectionPool = new ConnectionPool();
@@ -453,9 +414,7 @@ public class OkHttpClient implements Cloneable, Call.Factory {
       this.cache = okHttpClient.cache;
       this.socketFactory = okHttpClient.socketFactory;
       this.sslSocketFactory = okHttpClient.sslSocketFactory;
-      this.certificateChainCleaner = okHttpClient.certificateChainCleaner;
       this.hostnameVerifier = okHttpClient.hostnameVerifier;
-      this.certificatePinner = okHttpClient.certificatePinner;
       this.proxyAuthenticator = okHttpClient.proxyAuthenticator;
       this.authenticator = okHttpClient.authenticator;
       this.connectionPool = okHttpClient.connectionPool;
@@ -600,7 +559,6 @@ public class OkHttpClient implements Cloneable, Call.Factory {
             + ", sslSocketFactory is " + sslSocketFactory.getClass());
       }
       this.sslSocketFactory = sslSocketFactory;
-      this.certificateChainCleaner = CertificateChainCleaner.get(trustManager);
       return this;
     }
 
@@ -639,7 +597,6 @@ public class OkHttpClient implements Cloneable, Call.Factory {
       if (sslSocketFactory == null) throw new NullPointerException("sslSocketFactory == null");
       if (trustManager == null) throw new NullPointerException("trustManager == null");
       this.sslSocketFactory = sslSocketFactory;
-      this.certificateChainCleaner = CertificateChainCleaner.get(trustManager);
       return this;
     }
 
@@ -652,17 +609,6 @@ public class OkHttpClient implements Cloneable, Call.Factory {
     public Builder hostnameVerifier(HostnameVerifier hostnameVerifier) {
       if (hostnameVerifier == null) throw new NullPointerException("hostnameVerifier == null");
       this.hostnameVerifier = hostnameVerifier;
-      return this;
-    }
-
-    /**
-     * Sets the certificate pinner that constrains which certificates are trusted. By default HTTPS
-     * connections rely on only the {@link #sslSocketFactory SSL socket factory} to establish trust.
-     * Pinning certificates avoids the need to trust certificate authorities.
-     */
-    public Builder certificatePinner(CertificatePinner certificatePinner) {
-      if (certificatePinner == null) throw new NullPointerException("certificatePinner == null");
-      this.certificatePinner = certificatePinner;
       return this;
     }
 

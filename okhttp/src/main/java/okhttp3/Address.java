@@ -45,11 +45,9 @@ public final class Address {
   final Proxy proxy;
   final SSLSocketFactory sslSocketFactory;
   final HostnameVerifier hostnameVerifier;
-  final CertificatePinner certificatePinner;
 
   public Address(String uriHost, int uriPort, Dns dns, SocketFactory socketFactory,
-      SSLSocketFactory sslSocketFactory, HostnameVerifier hostnameVerifier,
-      CertificatePinner certificatePinner, Authenticator proxyAuthenticator, Proxy proxy,
+      SSLSocketFactory sslSocketFactory, HostnameVerifier hostnameVerifier, Authenticator proxyAuthenticator, Proxy proxy,
       List<Protocol> protocols, List<ConnectionSpec> connectionSpecs, ProxySelector proxySelector) {
     this.url = new HttpUrl.Builder()
         .scheme(sslSocketFactory != null ? "https" : "http")
@@ -80,7 +78,6 @@ public final class Address {
     this.proxy = proxy;
     this.sslSocketFactory = sslSocketFactory;
     this.hostnameVerifier = hostnameVerifier;
-    this.certificatePinner = certificatePinner;
   }
 
   /**
@@ -144,11 +141,6 @@ public final class Address {
     return hostnameVerifier;
   }
 
-  /** Returns this address's certificate pinner, or null if this is not an HTTPS address. */
-  public CertificatePinner certificatePinner() {
-    return certificatePinner;
-  }
-
   @Override public boolean equals(Object other) {
     if (other instanceof Address) {
       Address that = (Address) other;
@@ -160,8 +152,7 @@ public final class Address {
           && this.proxySelector.equals(that.proxySelector)
           && equal(this.proxy, that.proxy)
           && equal(this.sslSocketFactory, that.sslSocketFactory)
-          && equal(this.hostnameVerifier, that.hostnameVerifier)
-          && equal(this.certificatePinner, that.certificatePinner);
+          && equal(this.hostnameVerifier, that.hostnameVerifier);
     }
     return false;
   }
@@ -177,7 +168,6 @@ public final class Address {
     result = 31 * result + (proxy != null ? proxy.hashCode() : 0);
     result = 31 * result + (sslSocketFactory != null ? sslSocketFactory.hashCode() : 0);
     result = 31 * result + (hostnameVerifier != null ? hostnameVerifier.hashCode() : 0);
-    result = 31 * result + (certificatePinner != null ? certificatePinner.hashCode() : 0);
     return result;
   }
 }

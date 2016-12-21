@@ -27,7 +27,6 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocketFactory;
 import okhttp3.Address;
-import okhttp3.CertificatePinner;
 import okhttp3.Connection;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -187,15 +186,13 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
   private Address createAddress(HttpUrl url) {
     SSLSocketFactory sslSocketFactory = null;
     HostnameVerifier hostnameVerifier = null;
-    CertificatePinner certificatePinner = null;
     if (url.isHttps()) {
       sslSocketFactory = client.sslSocketFactory();
       hostnameVerifier = client.hostnameVerifier();
-      certificatePinner = client.certificatePinner();
     }
 
     return new Address(url.host(), url.port(), client.dns(), client.socketFactory(),
-        sslSocketFactory, hostnameVerifier, certificatePinner, client.proxyAuthenticator(),
+        sslSocketFactory, hostnameVerifier, client.proxyAuthenticator(),
         client.proxy(), client.protocols(), client.connectionSpecs(), client.proxySelector());
   }
 

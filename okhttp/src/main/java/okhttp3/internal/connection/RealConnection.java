@@ -32,7 +32,6 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import okhttp3.Address;
-import okhttp3.CertificatePinner;
 import okhttp3.Connection;
 import okhttp3.ConnectionSpec;
 import okhttp3.Handshake;
@@ -245,14 +244,9 @@ public final class RealConnection extends FramedConnection.Listener implements C
       if (!address.hostnameVerifier().verify(address.url().host(), sslSocket.getSession())) {
         X509Certificate cert = (X509Certificate) unverifiedHandshake.peerCertificates().get(0);
         throw new SSLPeerUnverifiedException("Hostname " + address.url().host() + " not verified:"
-            + "\n    certificate: " + CertificatePinner.pin(cert)
             + "\n    DN: " + cert.getSubjectDN().getName()
             + "\n    subjectAltNames: " + OkHostnameVerifier.allSubjectAltNames(cert));
       }
-
-      // Check that the certificate pinner is satisfied by the certificates presented.
-      address.certificatePinner().check(address.url().host(),
-          unverifiedHandshake.peerCertificates());
 
       // Success! Save the handshake and the ALPN protocol.
       String maybeProtocol = connectionSpec.supportsTlsExtensions()
