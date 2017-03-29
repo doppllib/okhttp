@@ -1,0 +1,40 @@
+apply plugin: 'java'
+apply plugin: 'co.touchlab.doppl.gradle'
+apply plugin: 'ivy-publish'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+
+}
+
+group = 'com.squareup.okhttp3'
+version = dopplOkhttpVersion
+
+publishing {
+    publications {
+        ivy(IvyPublication) {
+            from components.java
+            module 'okhttp'
+            artifact(dopplArchive) {
+                classifier 'doppl'
+                extension 'jar'
+            }
+        }
+    }
+
+    repositories {
+        ivy { url dopplIvyDeploy }
+    }
+}
+
+test{
+    enabled = false
+}
+
+dopplConfig {
+    copyMainOutput="iostest/dopplframework/main"
+    copyTestOutput="iostest/dopplframework/test"
+    copyDependencies true
+}

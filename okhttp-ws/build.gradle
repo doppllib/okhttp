@@ -1,0 +1,46 @@
+apply plugin: 'java'
+apply plugin: 'co.touchlab.doppl.gradle'
+apply plugin: 'ivy-publish'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+    compile 'junit:junit:4.11'
+
+    compile project(':okhttp')
+    doppl project(':okhttp')
+
+    provided "co.touchlab.doppl:androidbase:$dopplCoreVersion"
+    doppl "co.touchlab.doppl:androidbase:$dopplCoreVersion:doppl"
+
+    testCompile "co.touchlab.doppl:androidbasetest:$dopplCoreVersion"
+    testDoppl "co.touchlab.doppl:androidbasetest:$dopplCoreVersion:doppl"
+
+    testCompile 'org.mockito:mockito-core:1.9.5'
+    testCompile 'com.google.guava:guava:19.0'
+}
+
+group = 'com.squareup.okhttp3'
+version = dopplOkhttpVersion
+
+publishing {
+    publications {
+        ivy(IvyPublication) {
+            from components.java
+            module 'okhttp-ws'
+            artifact(dopplArchive) {
+                classifier 'doppl'
+                extension 'jar'
+            }
+        }
+    }
+
+    repositories {
+        ivy { url dopplIvyDeploy }
+    }
+}
+
+test{
+    enabled = false
+}
