@@ -18,7 +18,7 @@ package okhttp3.internal.tls;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.PublicKey;
-import java.security.cert.TrustAnchor;
+//import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -32,7 +32,7 @@ public abstract class TrustRootIndex {
   public abstract X509Certificate findByIssuerAndSignature(X509Certificate cert);
 
   public static TrustRootIndex get(X509TrustManager trustManager) {
-    try {
+    /*try {
       // From org.conscrypt.TrustManagerImpl, we want the method with this signature:
       // private TrustAnchor findTrustAnchorByIssuerAndSignature(X509Certificate lastCert);
       Method method = trustManager.getClass().getDeclaredMethod(
@@ -41,7 +41,8 @@ public abstract class TrustRootIndex {
       return new AndroidTrustRootIndex(trustManager, method);
     } catch (NoSuchMethodException e) {
       return get(trustManager.getAcceptedIssuers());
-    }
+    }*/
+    return get(trustManager.getAcceptedIssuers());
   }
 
   public static TrustRootIndex get(X509Certificate... caCerts) {
@@ -57,7 +58,7 @@ public abstract class TrustRootIndex {
    * class shouldn't be used in Android API 17 or better because those releases are better served by
    * {@link okhttp3.internal.AndroidPlatform.AndroidCertificateChainCleaner}.
    */
-  static final class AndroidTrustRootIndex extends TrustRootIndex {
+  /*static final class AndroidTrustRootIndex extends TrustRootIndex {
     private final X509TrustManager trustManager;
     private final Method findByIssuerAndSignatureMethod;
 
@@ -79,7 +80,7 @@ public abstract class TrustRootIndex {
         return null;
       }
     }
-  }
+  }*/
 
   /** A simple index that of trusted root certificates that have been loaded into memory. */
   static final class BasicTrustRootIndex extends TrustRootIndex {

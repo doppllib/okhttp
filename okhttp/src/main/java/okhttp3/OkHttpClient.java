@@ -15,6 +15,8 @@
  */
 package okhttp3;
 
+import android.util.Log;
+
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -247,8 +249,10 @@ public class OkHttpClient implements Cloneable, Call.Factory {
 
   private X509TrustManager systemDefaultTrustManager() {
     try {
-      TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
-          TrustManagerFactory.getDefaultAlgorithm());
+      String defaultAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+      Log.w(OkHttpClient.class.getSimpleName(), "defaultAlgorithm: "+ defaultAlgorithm);
+      TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(defaultAlgorithm);
+      Log.w(OkHttpClient.class.getSimpleName(), "after");
       trustManagerFactory.init((KeyStore) null);
       TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
       if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
@@ -257,7 +261,7 @@ public class OkHttpClient implements Cloneable, Call.Factory {
       }
       return (X509TrustManager) trustManagers[0];
     } catch (GeneralSecurityException e) {
-      throw new AssertionError(); // The system has no TLS. Just give up.
+      throw new RuntimeException(e); // The system has no TLS. Just give up.
     }
   }
 
