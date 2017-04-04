@@ -15,6 +15,8 @@
 #if !defined (GoTest_) && (INCLUDE_ALL_GoTest || defined(INCLUDE_GoTest))
 #define GoTest_
 
+@class IOSObjectArray;
+
 @interface GoTest : NSObject
 
 #pragma mark Public
@@ -22,6 +24,8 @@
 - (instancetype)init;
 
 + (void)heyoWithNSString:(NSString *)url;
+
++ (void)mainWithNSStringArray:(IOSObjectArray *)args;
 
 @end
 
@@ -32,6 +36,8 @@ FOUNDATION_EXPORT void GoTest_init(GoTest *self);
 FOUNDATION_EXPORT GoTest *new_GoTest_init() NS_RETURNS_RETAINED;
 
 FOUNDATION_EXPORT GoTest *create_GoTest_init();
+
+FOUNDATION_EXPORT void GoTest_mainWithNSStringArray_(IOSObjectArray *args);
 
 FOUNDATION_EXPORT void GoTest_heyoWithNSString_(NSString *url);
 

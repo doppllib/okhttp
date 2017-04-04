@@ -5,7 +5,10 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -20,9 +23,18 @@ import okhttp3.Response;
 public class GoTest
 {
 
-
-    public static void heyo(String url) throws IOException
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException
     {
+        heyo("http://droidcon-server.herokuapp.com/");
+    }
+
+    public static void heyo(String url) throws IOException, NoSuchAlgorithmException
+    {
+        SocketFactory socketFactory = SocketFactory.getDefault();
+        logClass(socketFactory);
+        Socket plainSocket = socketFactory.createSocket("droidcon-server.herokuapp.com", 80);
+        logClass(plainSocket);
+
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         logClass(con);
@@ -31,6 +43,9 @@ public class GoTest
         logClass(sf);
         SSLSocket socket = (SSLSocket)sf.createSocket("droidcon-server.herokuapp.com", 443);
         socket.startHandshake();
+
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        logClass(sslContext);
 
         OkHttpClient client = new OkHttpClient();
 //                new OkHttpClient.Builder().sslSocketFactory(SSLSocketFactory.getDefault()

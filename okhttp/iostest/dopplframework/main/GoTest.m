@@ -4,6 +4,7 @@
 
 #include "GoTest.h"
 #include "IOSClass.h"
+#include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
 #include "Okhttp3Call.h"
 #include "Okhttp3OkHttpClient.h"
@@ -16,6 +17,7 @@
 #include "java/net/URL.h"
 #include "java/net/URLConnection.h"
 #include "javax/net/SocketFactory.h"
+#include "javax/net/ssl/SSLContext.h"
 #include "javax/net/ssl/SSLSocket.h"
 #include "javax/net/ssl/SSLSocketFactory.h"
 
@@ -36,6 +38,10 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
++ (void)mainWithNSStringArray:(IOSObjectArray *)args {
+  GoTest_mainWithNSStringArray_(args);
+}
+
 + (void)heyoWithNSString:(NSString *)url {
   GoTest_heyoWithNSString_(url);
 }
@@ -48,16 +54,18 @@ J2OBJC_IGNORE_DESIGNATED_END
   static J2ObjcMethodInfo methods[] = {
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x9, 0, 1, 2, -1, -1, -1 },
-    { NULL, "V", 0xa, 3, 4, -1, -1, -1, -1 },
+    { NULL, "V", 0x9, 3, 4, 2, -1, -1, -1 },
+    { NULL, "V", 0xa, 5, 6, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(init);
-  methods[1].selector = @selector(heyoWithNSString:);
-  methods[2].selector = @selector(logClassWithId:);
+  methods[1].selector = @selector(mainWithNSStringArray:);
+  methods[2].selector = @selector(heyoWithNSString:);
+  methods[3].selector = @selector(logClassWithId:);
   #pragma clang diagnostic pop
-  static const void *ptrTable[] = { "heyo", "LNSString;", "LJavaIoIOException;", "logClass", "LNSObject;" };
-  static const J2ObjcClassInfo _GoTest = { "GoTest", NULL, ptrTable, methods, NULL, 7, 0x1, 3, 0, -1, -1, -1, -1, -1 };
+  static const void *ptrTable[] = { "main", "[LNSString;", "LJavaIoIOException;LJavaSecurityNoSuchAlgorithmException;", "heyo", "LNSString;", "logClass", "LNSObject;" };
+  static const J2ObjcClassInfo _GoTest = { "GoTest", NULL, ptrTable, methods, NULL, 7, 0x1, 4, 0, -1, -1, -1, -1, -1 };
   return &_GoTest;
 }
 
@@ -75,8 +83,17 @@ GoTest *create_GoTest_init() {
   J2OBJC_CREATE_IMPL(GoTest, init)
 }
 
+void GoTest_mainWithNSStringArray_(IOSObjectArray *args) {
+  GoTest_initialize();
+  GoTest_heyoWithNSString_(@"http://droidcon-server.herokuapp.com/");
+}
+
 void GoTest_heyoWithNSString_(NSString *url) {
   GoTest_initialize();
+  JavaxNetSocketFactory *socketFactory = JavaxNetSocketFactory_getDefault();
+  GoTest_logClassWithId_(socketFactory);
+  JavaNetSocket *plainSocket = [((JavaxNetSocketFactory *) nil_chk(socketFactory)) createSocketWithNSString:@"droidcon-server.herokuapp.com" withInt:80];
+  GoTest_logClassWithId_(plainSocket);
   JavaNetURL *obj = create_JavaNetURL_initWithNSString_(url);
   JavaNetHttpURLConnection *con = (JavaNetHttpURLConnection *) cast_chk([obj openConnection], [JavaNetHttpURLConnection class]);
   GoTest_logClassWithId_(con);
@@ -84,6 +101,8 @@ void GoTest_heyoWithNSString_(NSString *url) {
   GoTest_logClassWithId_(sf);
   JavaxNetSslSSLSocket *socket = (JavaxNetSslSSLSocket *) cast_chk([((JavaxNetSslSSLSocketFactory *) nil_chk(sf)) createSocketWithNSString:@"droidcon-server.herokuapp.com" withInt:443], [JavaxNetSslSSLSocket class]);
   [((JavaxNetSslSSLSocket *) nil_chk(socket)) startHandshake];
+  JavaxNetSslSSLContext *sslContext = JavaxNetSslSSLContext_getInstanceWithNSString_(@"TLS");
+  GoTest_logClassWithId_(sslContext);
   Okhttp3OkHttpClient *client = create_Okhttp3OkHttpClient_init();
   Okhttp3Request *request = [((Okhttp3Request_Builder *) nil_chk([create_Okhttp3Request_Builder_init() urlWithNSString:url])) build];
   Okhttp3Response *response = [((id<Okhttp3Call>) nil_chk([client newCallWithOkhttp3Request:request])) execute];
