@@ -12,14 +12,7 @@
 #include "Okhttp3Response.h"
 #include "Okhttp3ResponseBody.h"
 #include "android/util/Log.h"
-#include "java/net/HttpURLConnection.h"
-#include "java/net/Socket.h"
-#include "java/net/URL.h"
-#include "java/net/URLConnection.h"
-#include "javax/net/SocketFactory.h"
 #include "javax/net/ssl/SSLContext.h"
-#include "javax/net/ssl/SSLSocket.h"
-#include "javax/net/ssl/SSLSocketFactory.h"
 
 @interface GoTest ()
 
@@ -90,17 +83,8 @@ void GoTest_mainWithNSStringArray_(IOSObjectArray *args) {
 
 void GoTest_heyoWithNSString_(NSString *url) {
   GoTest_initialize();
-  JavaxNetSocketFactory *socketFactory = JavaxNetSocketFactory_getDefault();
-  GoTest_logClassWithId_(socketFactory);
-  JavaNetSocket *plainSocket = [((JavaxNetSocketFactory *) nil_chk(socketFactory)) createSocketWithNSString:@"droidcon-server.herokuapp.com" withInt:80];
-  GoTest_logClassWithId_(plainSocket);
-  JavaNetURL *obj = create_JavaNetURL_initWithNSString_(url);
-  JavaNetHttpURLConnection *con = (JavaNetHttpURLConnection *) cast_chk([obj openConnection], [JavaNetHttpURLConnection class]);
-  GoTest_logClassWithId_(con);
-  JavaxNetSslSSLSocketFactory *sf = (JavaxNetSslSSLSocketFactory *) cast_chk(JavaxNetSslSSLSocketFactory_getDefault(), [JavaxNetSslSSLSocketFactory class]);
-  GoTest_logClassWithId_(sf);
-  JavaxNetSslSSLSocket *socket = (JavaxNetSslSSLSocket *) cast_chk([((JavaxNetSslSSLSocketFactory *) nil_chk(sf)) createSocketWithNSString:@"droidcon-server.herokuapp.com" withInt:443], [JavaxNetSslSSLSocket class]);
-  [((JavaxNetSslSSLSocket *) nil_chk(socket)) startHandshake];
+  JavaxNetSslSSLContext *sslDefault = JavaxNetSslSSLContext_getDefault();
+  GoTest_logClassWithId_(sslDefault);
   JavaxNetSslSSLContext *sslContext = JavaxNetSslSSLContext_getInstanceWithNSString_(@"TLS");
   GoTest_logClassWithId_(sslContext);
   Okhttp3OkHttpClient *client = create_Okhttp3OkHttpClient_init();

@@ -30,7 +30,7 @@ public class GoTest
 
     public static void heyo(String url) throws IOException, NoSuchAlgorithmException
     {
-        SocketFactory socketFactory = SocketFactory.getDefault();
+        /*SocketFactory socketFactory = SocketFactory.getDefault();
         logClass(socketFactory);
         Socket plainSocket = socketFactory.createSocket("droidcon-server.herokuapp.com", 80);
         logClass(plainSocket);
@@ -42,7 +42,10 @@ public class GoTest
                 .getDefault();
         logClass(sf);
         SSLSocket socket = (SSLSocket)sf.createSocket("droidcon-server.herokuapp.com", 443);
-        socket.startHandshake();
+        socket.startHandshake();*/
+
+        SSLContext sslDefault = SSLContext.getDefault();
+        logClass(sslDefault);
 
         SSLContext sslContext = SSLContext.getInstance("TLS");
         logClass(sslContext);
