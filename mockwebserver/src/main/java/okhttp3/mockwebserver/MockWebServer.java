@@ -407,7 +407,38 @@ public final class MockWebServer implements TestRule {
 
       public void processConnection() throws Exception {
         Protocol protocol = Protocol.HTTP_1_1;
-        Socket socket = raw;
+        Socket socket;
+        /*if (sslSocketFactory != null) {
+          if (tunnelProxy) {
+            createTunnel();
+          }
+          SocketPolicy socketPolicy = dispatcher.peek().getSocketPolicy();
+          if (socketPolicy == FAIL_HANDSHAKE) {
+            dispatchBookkeepingRequest(sequenceNumber, raw);
+            processHandshakeFailure(raw);
+            return;
+          }
+          socket = sslSocketFactory.createSocket(raw, raw.getInetAddress().getHostAddress(),
+              raw.getPort(), true);
+          SSLSocket sslSocket = (SSLSocket) socket;
+          sslSocket.setUseClientMode(false);
+          openClientSockets.add(socket);
+
+          if (protocolNegotiationEnabled) {
+            Platform.get().configureTlsExtensions(sslSocket, null, protocols);
+          }
+
+          sslSocket.startHandshake();
+
+          if (protocolNegotiationEnabled) {
+            String protocolString = Platform.get().getSelectedProtocol(sslSocket);
+            protocol = protocolString != null ? Protocol.get(protocolString) : Protocol.HTTP_1_1;
+          }
+          openClientSockets.remove(raw);
+        } else */
+        {
+          socket = raw;
+        }
 
         if (protocol != Protocol.HTTP_1_1) {
           FramedSocketHandler framedSocketListener = new FramedSocketHandler(socket, protocol);
