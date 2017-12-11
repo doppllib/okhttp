@@ -6,13 +6,13 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-  testCompile 'junit:junit:4.11'
+    testCompile "junit:junit:$doppl_junit_java"
+    testDoppl "co.doppl.junit:junit:$doppl_junit_doppl"
+    compile "com.squareup.okio:okio:$doppl_okio_java"
+    doppl "co.doppl.com.squareup.okio:okio:$doppl_okio_doppl"
 }
 
-group = 'co.doppl.com.squareup.okhttp3'
-version = '3.4.2.1'
 ext.artifactId = 'okhttp'
-ext.bintrayGitUrl = 'https://github.com/doppllib/okhttp.git'
 
 apply from: "$dopplSharedScriptHome/doppllibpublish.gradle"
 apply from: "$dopplSharedScriptHome/bintray.gradle"

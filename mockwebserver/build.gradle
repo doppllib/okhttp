@@ -12,13 +12,12 @@ dependencies {
     compile project(':okhttp-ws')
     doppl project(':okhttp')
     doppl project(':okhttp-ws')
+
+    compile "com.squareup.okio:okio:$doppl_okio_java"
+    doppl "co.doppl.com.squareup.okio:okio:$doppl_okio_doppl"
 }
 
-group = 'co.doppl.com.squareup.okhttp3'
-version = '3.4.2.1'
 ext.artifactId = 'mockwebserver'
-ext.bintrayGitUrl = 'https://github.com/doppllib/okhttp.git'
-//ext.javaVersion = '3.4.2'
 
 apply from: "$dopplSharedScriptHome/doppllibpublish.gradle"
 apply from: "$dopplSharedScriptHome/bintray.gradle"
