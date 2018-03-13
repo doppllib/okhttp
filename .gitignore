@@ -17,6 +17,9 @@ classes
 build/
 out/
 
+doppllib.podspec
+testdoppllib.podspec
+
 # Generated files
 bin/
 gen/
